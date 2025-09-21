@@ -1,5 +1,13 @@
+import React from "react"
 
-export default function IngredientsList(props) {
+interface IngredientsListProps {
+    ingredients: string[];
+    getRecipe: () => void;
+    isLoading: boolean;
+    ref: React.RefObject<HTMLDivElement>;
+}
+
+export default function IngredientsList(props: IngredientsListProps) {
     const ingredientsListItems = props.ingredients.map((ingredient, index) => (
         <li 
             key={ingredient} 

@@ -1,4 +1,4 @@
-export async function getRecipeFromAI(ingredientsArr) {
+export async function getRecipeFromAI(ingredientsArr: string[]): Promise<string> {
     try {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/recipe`, {
             method: 'POST',

@@ -1,25 +1,24 @@
 import React from "react"
-import IngredientsList from "./IngredientsList"
 import AIRecipe from "./AIRecipe"
 import { getRecipeFromAI } from "../api"
 
 export default function Main() {
 
-    const [ingredients, setIngredients] = React.useState([])
-    const [recipe, setRecipe] = React.useState("")
-    const [isLoading, setIsLoading] = React.useState(false)
-    const [error, setError] = React.useState("")
-    const [isDownloadingPDF, setIsDownloadingPDF] = React.useState(false)
-    const recipeSection = React.useRef(null)
+    const [ingredients, setIngredients] = React.useState<string[]>([])
+    const [recipe, setRecipe] = React.useState<string>("")
+    const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [error, setError] = React.useState<string>("")
+    const [isDownloadingPDF, setIsDownloadingPDF] = React.useState<boolean>(false)
+    const recipeSection = React.useRef<HTMLDivElement>(null)
 
-    function addIngredient(formData) {
+    function addIngredient(formData: FormData) {
         const newIngredient = formData.get("ingredient")
-        if (newIngredient.trim()) {
+        if (typeof newIngredient === 'string' && newIngredient.trim()) {
             setIngredients(prevIngredients => [...prevIngredients, newIngredient.trim()])
         }
     }
 
-    function removeIngredient(indexToRemove) {
+    function removeIngredient(indexToRemove: number) {
         setIngredients(prevIngredients => 
             prevIngredients.filter((_, index) => index !== indexToRemove)
         )
@@ -42,11 +41,12 @@ export default function Main() {
             setError(""); // Clear any previous errors
         } catch (error) {
             console.error("Error generating recipe:", error);
-            
+
             // More specific error messages
             let errorMessage = "Failed to generate recipe. ";
             
-            if (error.message.includes('API key') || error.message.includes('401')) {
+            if (error instanceof Error) {
+                if (error.message.includes('API key') || error.message.includes('401')) {
                 errorMessage += "There's an issue with the API configuration.";
             } else if (error.message.includes('500')) {
                 errorMessage += "Server error - please check if your backend server is running properly.";
@@ -57,48 +57,12 @@ export default function Main() {
             } else {
                 errorMessage += error.message || "Please try again.";
             }
+            }
             
             setError(errorMessage);
             setRecipe(""); // Clear any previous recipe
         } finally {
             setIsLoading(false);
-        }
-    }
-
-    async function handleDownloadPDF() {
-        if (ingredients.length === 0) {
-            setError("Please add ingredients first!")
-            return
-        }
-
-        setIsDownloadingPDF(true)
-        setError("")
-        
-        try {
-            if (recipe) {
-                // Export existing recipe
-                await exportRecipeAsPDF(ingredients, recipe)
-            } else {
-                // Generate new recipe and download as PDF
-                await downloadRecipeAsPDF(ingredients)
-            }
-            setError("") // Clear any errors on success
-        } catch (error) {
-            console.error("Error downloading PDF:", error)
-            
-            let errorMessage = "Failed to download PDF. "
-            
-            if (error.message.includes('API key') || error.message.includes('401')) {
-                errorMessage += "There's an issue with the API configuration."
-            } else if (error.message.includes('500')) {
-                errorMessage += "Server error - please check if your backend server is running properly."
-            } else {
-                errorMessage += error.message || "Please try again."
-            }
-            
-            setError(errorMessage)
-        } finally {
-            setIsDownloadingPDF(false)
         }
     }
 
