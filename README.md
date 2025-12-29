@@ -106,10 +106,4 @@ Generate recipe from ingredients
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Team
-
-- **Developer**: Misha Gupta
-- **Role**: Full-stack development, AI integration, UI/UX design
 ---
-
-**Built for PennApps2025**
